@@ -4,6 +4,7 @@ import 'package:expedition_poc/screens/application/expeditions/data/data_list.da
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/appPaths.dart';
 import 'package:expedition_poc/utilities/enum.dart';
+import 'package:expedition_poc/utils/colors.dart';
 import 'package:expedition_poc/widgets/add_floatingButton.dart';
 import 'package:expedition_poc/widgets/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,11 @@ class _DataState extends State<Data> {
         Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text(title),
+            backgroundColor: primaryColor,
+            iconTheme: IconThemeData(
+              color: Colors.white
+            ),
+            title: Text(title, style: TextStyle(color: Colors.white),),
           ),
           body: DataList(
               dataList: dataList,

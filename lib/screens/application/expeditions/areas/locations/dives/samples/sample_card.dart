@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/areas/locations/dives/samples/sample_form.dart';
 import 'package:expedition_poc/services/generate_image_url.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/appPaths.dart';
@@ -124,14 +125,25 @@ class _SampleCardState extends State<SampleCard> {
                             "name": "Edit",
                             "value": "edit",
                             "method": () => {
-                              Navigator.pushNamed(context, AppPaths.sampleForm,
-                                  arguments: {
-                                    "expeditionId": widget.item["expeditionId"],
-                                    "areaId": widget.item['areaId'],
-                                    "diveId": widget.item["diveId"],
-                                    "locationId": widget.item["locationId"],
-                                    "sampleId": widget.item["_key"]
-                                  }).then((value) {
+
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return  AlertDialog(
+                                      contentPadding: EdgeInsets.zero,
+                                      content: Container(
+                                          width: MediaQuery.of(context).size.width,
+                                          child: SampleForm(
+                                            arguments: {
+                                              "expeditionId": widget.item["expeditionId"],
+                                              "areaId": widget.item['areaId'],
+                                              "diveId": widget.item["diveId"],
+                                              "locationId": widget.item["locationId"],
+                                              "sampleId": widget.item["_key"]
+                                            },
+                                          )
+                                      ),);
+                                  })..then((value) {
                                 widget.showAllOngoing
                                     ? widget
                                     .initCall(widget.item["locationId"])
@@ -142,6 +154,27 @@ class _SampleCardState extends State<SampleCard> {
                                 selectedPanelContent();
                               })
                             }
+
+                          //     Navigator.pushNamed(context, AppPaths.sampleForm,
+                          //         arguments: {
+                          //           "expeditionId": widget.item["expeditionId"],
+                          //           "areaId": widget.item['areaId'],
+                          //           "diveId": widget.item["diveId"],
+                          //           "locationId": widget.item["locationId"],
+                          //           "sampleId": widget.item["_key"]
+                          //         }
+                          //         ).then((value) {
+                          //       widget.showAllOngoing
+                          //           ? widget
+                          //           .initCall(widget.item["locationId"])
+                          //           : widget.initCall(widget.item["diveId"]);
+                          //       setState(() {
+                          //         _selectedPanel = ExpandableContent.none;
+                          //       });
+                          //       selectedPanelContent();
+                          //     })
+                          //   }
+                          // },
                           },
                           {
                             "name": "Delete",

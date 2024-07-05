@@ -1,4 +1,5 @@
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/TestScreenData.dart';
 import 'package:expedition_poc/utils/context_extension.dart';
 import 'package:expedition_poc/screens/tabs/configuration.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   late List expeditionsList = [];
   bool _isLoading = false;
-  List<String> appbarTitles = ["Home", "Configuration"];
+  List<String> appbarTitles = ["Home", "Configuration", "Text Screen"];
 
   late List<Widget> _widgetOptions = [];
 
@@ -46,12 +47,14 @@ class _HomePageState extends State<HomePage> {
     if (expeditionsList.isNotEmpty) {
       expeditionId = expeditionsList[0]["_key"];
     }
+
     _widgetOptions = [
       ExpeditionsWithList(
           expeditionsList: expeditionsList, initialize: initialize),
       Configuration(
         expeditionId: expeditionId,
-      )
+      ),
+      TestScreenData(expeditionList: expeditionsList,initialize: initialize,),
     ];
   }
 
@@ -241,6 +244,7 @@ class _HomePageState extends State<HomePage> {
               tabs: [
                 createGButton(primaryColor, 'Home', Icons.home),
                 createGButton(primaryColor, 'Config', Icons.settings),
+                createGButton(primaryColor, 'Test', Icons.add)
                 // createGButton(ColorUtils.diveBar, 'Dive', Icons.location_pin),
                 // createGButton(ColorUtils.dataBar, 'Data',
                 //     Icons.data_thresholding_outlined),

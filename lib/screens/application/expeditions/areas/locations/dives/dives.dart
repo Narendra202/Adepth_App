@@ -1,4 +1,5 @@
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/areas/locations/dives/dive_form.dart';
 import 'package:expedition_poc/screens/application/expeditions/areas/locations/dives/dive_list.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/appPaths.dart';
@@ -9,6 +10,7 @@ import 'package:expedition_poc/widgets/add_floatingButton.dart';
 import 'package:expedition_poc/widgets/confirmation_dialog.dart';
 import 'package:expedition_poc/widgets/readonlyField.dart';
 import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class Dives extends StatefulWidget {
   const Dives({super.key});
@@ -24,6 +26,7 @@ class _DivesState extends State<Dives> {
   var data;
   late String areaId, expeditionId, locationId;
   bool isOpen = false;
+  late Map formData;
 
   @override
   void initState() {
@@ -135,12 +138,31 @@ class _DivesState extends State<Dives> {
                 floatingActionButton: AppCircleButton(
                   icon: Icons.add,
                   onPressed: (){
-                    Navigator.pushNamed(context, AppPaths.diveForm,
-                                      arguments: {
-                                        "areaId": areaId,
-                                        "expeditionId": expeditionId,
-                                        "locationId": locationId,
-                                      }).then((value) => {initialize(locationId)});
+
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return  AlertDialog(
+                            contentPadding: EdgeInsets.zero,
+                            content: Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: DiveForm(
+                                  arguments: {
+                                    "areaId": areaId,
+                                    "expeditionId": expeditionId,
+                                    "locationId": locationId,
+                                  },
+                            ),
+                          ));
+                        }
+                    ).then((value) => {initialize(locationId)});
+
+                    // Navigator.pushNamed(context, AppPaths.diveForm,
+                    //                   arguments: {
+                    //                     "areaId": areaId,
+                    //                     "expeditionId": expeditionId,
+                    //                     "locationId": locationId,
+                    //                   }).then((value) => {initialize(locationId)});
                   }
                 ) ),
                 // floatingActionButton: AddFloatingButton(
