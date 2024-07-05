@@ -1,4 +1,5 @@
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/areas/locations/dives/samples/sample_form.dart';
 import 'package:expedition_poc/screens/application/expeditions/areas/locations/dives/samples/sample_list.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/appPaths.dart';
@@ -23,7 +24,7 @@ class _SamplesState extends State<Samples> {
   bool _isLoading = false;
   String title = "Dive";
   var data;
-  late String areaId, expeditionId, diveId, locationId;
+  late String areaId, expeditionId, diveId = "", locationId;
   bool isOpen = false;
 
   @override
@@ -37,16 +38,14 @@ class _SamplesState extends State<Samples> {
 
   Future<void> _initializeData() async {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    setState(() {
       diveId = (arguments)["diveId"];
-    });
     expeditionId = (arguments)["expeditionId"];
     areaId = (arguments)["areaId"];
     locationId = (arguments)["locationId"];
     if (diveId.isEmpty) {
       initializeForLocation(locationId);
     } else {
-      initialize(diveId);
+     await  initialize(diveId);
     }
   }
 
@@ -169,13 +168,34 @@ class _SamplesState extends State<Samples> {
               child: AppCircleButton(
                   icon: Icons.add,
                   onPressed: () => {
-                            Navigator.pushNamed(context, AppPaths.sampleForm,
-                                arguments: {
-                                  "areaId": areaId,
-                                  "expeditionId": expeditionId,
-                                  "locationId": locationId,
-                                  "diveId": diveId
-                                }).then((value) => {initialize(diveId)})
+                  showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                  return  AlertDialog(
+                  contentPadding: EdgeInsets.zero,
+                  content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: SampleForm(
+                  arguments: {
+                    "areaId": areaId,
+                    "expeditionId": expeditionId,
+                    "locationId": locationId,
+                    "diveId": diveId
+                  },
+                  ),
+                  ));
+                  }
+                  ).then((value) => {initialize(diveId)})
+
+
+                  //
+                            // Navigator.pushNamed(context, AppPaths.sampleForm,
+                            //     arguments: {
+                            //       "areaId": areaId,
+                            //       "expeditionId": expeditionId,
+                            //       "locationId": locationId,
+                            //       "diveId": diveId
+                            //     }).then((value) => {initialize(diveId)})
                           }),
             )
             // floatingActionButton: Visibility(

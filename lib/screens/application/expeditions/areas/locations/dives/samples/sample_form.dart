@@ -9,6 +9,7 @@ import 'package:expedition_poc/utilities/colorUtils.dart';
 import 'package:expedition_poc/utilities/enum.dart';
 import 'package:expedition_poc/utils/AppSigninTextFormField.dart';
 import 'package:expedition_poc/utils/AppTextFormField.dart';
+import 'package:expedition_poc/utils/responsive.dart';
 import 'package:expedition_poc/widgets/gallery_item.dart';
 import 'package:expedition_poc/widgets/imageUpload.dart';
 import 'package:expedition_poc/widgets/multiSelectWidget.dart';
@@ -24,7 +25,9 @@ import 'package:http/http.dart' as http;
 import '../../../../../../../utils/colors.dart';
 
 class SampleForm extends StatefulWidget {
-  const SampleForm({super.key});
+  const SampleForm({super.key, this.arguments});
+
+  final arguments;
 
   @override
   _SampleFormState createState() => _SampleFormState();
@@ -83,7 +86,8 @@ class _SampleFormState extends State<SampleForm> {
   }
 
   Future<void> _initializeData() async {
-    final arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    final arguments = widget.arguments;
+    // final arguments = ModalRoute.of(context)!.settings.arguments as Map;
     diveId = (arguments)["diveId"];
     expeditionId = (arguments)["expeditionId"];
     areaId = (arguments)["areaId"];
@@ -505,6 +509,7 @@ class _SampleFormState extends State<SampleForm> {
                 },
                ),
             ),
+            SizedBox(width: 5,),
             Expanded(
               child: AppFormTextField(
                 labelText: 'Time',
@@ -524,47 +529,34 @@ class _SampleFormState extends State<SampleForm> {
           ],
         ),
 
-        AppFormTextField(
-          prefix: Text('-'),
-          labelText: 'Depth (m)',
-          hintText: 'Depth (m)',
-          controller: _depthController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return 'Please Enter Depth (m) *';
-            } return null;
-          },
-        ),
+        AppTextFormFieldFunc('-', 'Depth (m)', _depthController, TextInputType.number),
 
         MultiSelectWidget(
             name: 'Tools', itemsList: toolsItemList, items: _toolsItems
         ),
 
-        AppFormTextField(
-          labelText: 'Latitude',
-          hintText: 'Latitude',
-          controller: _latitudeController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return 'Please Enter Latitude';
-            } return null;
-          },
-
-        ),
-
-        AppFormTextField(
-          labelText: 'Longitude',
-          hintText: 'Longitude',
-          controller: _longitudeController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return 'Please Enter Latitude';
-            } return null;
-          },
-        ),
+       ResponsiveApp(
+           mobile: Column(
+             children: [
+               AppTextFormFieldFunc('', 'Latitude', _latitudeController, TextInputType.number),
+               AppTextFormFieldFunc('', 'Longitude', _longitudeController, TextInputType.number),
+             ],
+           ),
+           tablet: Row(
+               children: [
+                 Expanded(child: AppTextFormFieldFunc('', 'Latitude', _latitudeController, TextInputType.number),),
+                 SizedBox(width: 5,),
+                 Expanded(child: AppTextFormFieldFunc('', 'Longitude', _longitudeController, TextInputType.number),),
+               ]
+           ),
+           desktop: Row(
+             children: [
+               Expanded(child: AppTextFormFieldFunc('', 'Latitude', _latitudeController, TextInputType.number),),
+               SizedBox(width: 5,),
+               Expanded(child: AppTextFormFieldFunc('', 'Longitude', _longitudeController, TextInputType.number),),
+             ]
+           )
+       ),
 
 
         Row(
@@ -603,7 +595,8 @@ class _SampleFormState extends State<SampleForm> {
         Stack(
           children: [
             SizedBox(
-              width: 250,
+              // width: 250,
+              width: MediaQuery.of(context).size.width,
               height: _mapHeight,
               child: FlutterMap(
                 mapController: _mapController,
@@ -665,16 +658,8 @@ class _SampleFormState extends State<SampleForm> {
         ),
 
 
-        AppFormTextField(
-          labelText: 'Comment',
-          hintText: 'Comment',
-          controller: _commentController,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return 'Please Enter Comment';
-            } return null;
-          },
-        ),
+        AppTextFormFieldFunc('', 'Comment', _commentController, TextInputType.text),
+
 
         //
         ImageUpload(
@@ -710,6 +695,21 @@ class _SampleFormState extends State<SampleForm> {
       });
     }
   }
+
+  AppTextFormFieldFunc(prefix , labelText, controller, keyboardType){
+    return   AppFormTextField(
+      prefix: Text(prefix),
+      labelText: labelText + ' *',
+      controller: controller,
+      keyboardInputType: keyboardType,
+      validator: (value){
+        if((value == null || value.isEmpty) && isSaved == true){
+          return 'Please Enter $labelText *';
+        } return null;
+      },
+    );
+  }
+
 
   Future saveDive() async {
     if (!_formKey.currentState!.validate()) {
@@ -753,7 +753,6 @@ class _SampleFormState extends State<SampleForm> {
       _isLoading = false;
     });
 
-    // print('Response body: ${response.body}');
     Navigator.pop(
         context, MaterialPageRoute(builder: (context) => Platforms()));
   }

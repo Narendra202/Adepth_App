@@ -16,9 +16,12 @@ import 'package:location/location.dart';
 import 'package:positioned_tap_detector_2/positioned_tap_detector_2.dart';
 
 class AreaForm extends StatefulWidget {
-  const AreaForm({super.key, this.arguments});
+  AreaForm({super.key, this.arguments, this.formData});
 
   final arguments;
+  Function(dynamic)? formData;
+
+
   @override
   _AreaFormState createState() => _AreaFormState();
 }
@@ -105,26 +108,26 @@ class _AreaFormState extends State<AreaForm> {
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-    // _mapWidth = 250;
-    // final arguments = ModalRoute.of(context)!.settings.arguments;
-    // expeditionId = (arguments as Map)["expeditionId"];
-    // setState(() {
-    //   _isLoading = true;
-    // });
-    // if (arguments.containsKey("areaId")) {
-    //   areaId = (arguments)["areaId"];
-    //   await getData();
-    // } else {
-    //   name = await ApiProvider().get(
-    //       "${AppConsts.baseURL}${AppConsts.generateNameArea}$expeditionId");
-    // }
-    // setState(() {
-    //   _isLoading = false;
-    // });
-  }
+  // @override
+  // void didChangeDependencies() async {
+  //   super.didChangeDependencies();
+  //   // _mapWidth = 250;
+  //   // final arguments = ModalRoute.of(context)!.settings.arguments;
+  //   // expeditionId = (arguments as Map)["expeditionId"];
+  //   // setState(() {
+  //   //   _isLoading = true;
+  //   // });
+  //   // if (arguments.containsKey("areaId")) {
+  //   //   areaId = (arguments)["areaId"];
+  //   //   await getData();
+  //   // } else {
+  //   //   name = await ApiProvider().get(
+  //   //       "${AppConsts.baseURL}${AppConsts.generateNameArea}$expeditionId");
+  //   // }
+  //   // setState(() {
+  //   //   _isLoading = false;
+  //   // });
+  // }
 
   getData() async {
     final response = await ApiProvider()
@@ -496,7 +499,7 @@ class _AreaFormState extends State<AreaForm> {
         Stack(
           children: [
             SizedBox(
-              width: _mapWidth,
+              width: MediaQuery.of(context).size.width,
               height: _mapHeight,
               child: FlutterMap(
                 mapController: _mapController,
@@ -667,9 +670,22 @@ class _AreaFormState extends State<AreaForm> {
     // save to db
     final response =
         await ApiProvider().post(AppConsts.baseURL + AppConsts.saveArea, obj);
+
+
+    if(widget.arguments['diveCount'] != null) {
+      obj['diveCount'] = widget.arguments['diveCount'];
+    }else{
+      obj['diveCount'] = 0;
+    }
+
+    if(response != null) {
+      obj['_key'] = response['_key'];
+    }
+
+    widget.formData!(obj);
     setState(() {
       _isLoading = false;
     });
-    Navigator.pop(context, MaterialPageRoute(builder: (context) => Areas()));
+    // Navigator.pop(context, MaterialPageRoute(builder: (context) => Areas()));
   }
 }

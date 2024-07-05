@@ -23,7 +23,6 @@ class _ExpeditionsState extends State<Expeditions> {
   void initState() {
     super.initState();
     initialize();
-    print(expeditionsList);
   }
 
   initialize() async {

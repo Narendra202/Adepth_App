@@ -30,6 +30,7 @@ class _DiveListState extends State<DiveList> {
 
   @override
   Widget build(BuildContext context) {
+
     return ResponsiveApp(
       mobile: ListView.builder(
         itemCount: diveList.length, // The number of items in the list

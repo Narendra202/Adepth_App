@@ -1,4 +1,5 @@
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/TestScreenData.dart';
 import 'package:expedition_poc/screens/application/expeditions/areas/area_form.dart';
 import 'package:expedition_poc/screens/application/expeditions/areas/area_list.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
@@ -9,9 +10,12 @@ import 'package:expedition_poc/utils/colors.dart';
 import 'package:expedition_poc/widgets/add_floatingButton.dart';
 import 'package:expedition_poc/widgets/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class Areas extends StatefulWidget {
-  const Areas({super.key});
+  Areas({super.key, this.arguments,});
+
+  Map? arguments;
 
   @override
   State<Areas> createState() => _AreasState();
@@ -23,10 +27,10 @@ class _AreasState extends State<Areas> {
   String title = "Area";
   var data;
   late String expeditionId;
+  late Map formData;
 
   @override
   void initState() {
-    super.initState();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Code to execute after the build is complete
@@ -35,7 +39,10 @@ class _AreasState extends State<Areas> {
   }
 
   Future<void> _initializeData() async {
+    // final arguments = widget.arguments;
     final arguments = ModalRoute.of(context)!.settings.arguments;
+    print('arguments of area is : $arguments');
+
     expeditionId = (arguments as Map)["expeditionId"];
     initialize(expeditionId);
   }
@@ -93,7 +100,15 @@ class _AreasState extends State<Areas> {
             body: AreaList(
                 areaList: areaList,
                 initCall: initialize,
-                showConfirmationDialog: showConfirmationDialog),
+                showConfirmationDialog: showConfirmationDialog,
+                editformData: (value){
+                  for(int i = 0; i < areaList.length; i++) {
+                    if(areaList[i]['_key'] == value['_key']) {
+                      areaList[i] = value;
+                    }
+                  }
+                },
+            ),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             floatingActionButton: AppCircleButton(
               icon: Icons.add,
@@ -106,11 +121,17 @@ class _AreasState extends State<Areas> {
                         contentPadding: EdgeInsets.zero,
                         content: Container(
                             width: MediaQuery.of(context).size.width,
-                            child: AreaForm(arguments: {"expeditionId": expeditionId},)
+                            child: AreaForm(
+                              arguments: {"expeditionId": expeditionId},
+                              formData: (value){
+                                formData = value;
+                                areaList.add(formData);
+                                finish(context);
+                              },)
                         ),
                       );
                     }
-                ).then((value) => {initialize(expeditionId)});
+                );
 
                 // Navigator.pushNamed(context, AppPaths.areaForm,
                 //                       arguments: {"expeditionId": expeditionId})

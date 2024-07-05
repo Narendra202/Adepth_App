@@ -45,7 +45,6 @@ class _AppFormTextFieldState extends State<AppFormTextField> {
           suffixIcon: Icon(widget.suffixIcon)),
         ),
       );
-
   }
 }
 

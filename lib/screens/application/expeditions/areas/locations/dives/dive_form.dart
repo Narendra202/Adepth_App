@@ -4,6 +4,7 @@ import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/colorUtils.dart';
 import 'package:expedition_poc/utilities/enum.dart';
 import 'package:expedition_poc/utils/AppTextFormField.dart';
+import 'package:expedition_poc/utils/responsive.dart';
 import 'package:expedition_poc/widgets/multiSelectWidget.dart';
 import 'package:expedition_poc/widgets/multiselect.dart';
 import 'package:expedition_poc/widgets/readonlyField.dart';
@@ -17,7 +18,10 @@ import '../../../../../../utils/colors.dart';
 enum FORM_TYPE { DIVE, SAMPLE, ANALYSIS }
 
 class DiveForm extends StatefulWidget {
-  const DiveForm({super.key});
+  DiveForm({super.key, this.arguments});
+
+
+  final arguments;
 
   @override
   _DiveFormState createState() => _DiveFormState();
@@ -63,7 +67,8 @@ class _DiveFormState extends State<DiveForm> {
   }
 
   Future<void> _initializeData() async {
-    final arguments = ModalRoute.of(context)!.settings.arguments;
+    final arguments = widget.arguments;
+    // final arguments = ModalRoute.of(context)!.settings.arguments;
     expeditionId = (arguments as Map)["expeditionId"];
     areaId = (arguments)["areaId"];
     locationId = (arguments)["locationId"];
@@ -102,7 +107,6 @@ class _DiveFormState extends State<DiveForm> {
     _endDate.dispose();
     _startTimeController.dispose();
     _endTimeController.dispose();
-    _commentController.dispose();
     _commentController.dispose();
     _purposeController.dispose();
   }
@@ -384,18 +388,7 @@ class _DiveFormState extends State<DiveForm> {
         //   ),
         //   controller: _commentController,
         // ),
-
-        AppFormTextField(
-          labelText: 'Dive Number *',
-          hintText: 'Dive Number *',
-          controller: _diveNumberController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Dive Number *";
-            } return null;
-          },
-        ),
+        AppTextFormFieldFunc('Dive Number', _diveNumberController, TextInputType.number),
 
       Row(
          children: [
@@ -415,6 +408,7 @@ class _DiveFormState extends State<DiveForm> {
                },
              ),
            ),
+           SizedBox(width: 5,),
            Expanded(
              child: AppFormTextField(
                labelText: 'Start Time',
@@ -452,6 +446,7 @@ class _DiveFormState extends State<DiveForm> {
                 },
               ),
             ),
+            SizedBox(width: 5,),
             Expanded(
               child: AppFormTextField(
                 labelText: 'End Time',
@@ -472,40 +467,86 @@ class _DiveFormState extends State<DiveForm> {
         ),
 
 
-        MultiSelectWidget(
-            name: 'Platform Type',
-            itemsList: platformItemList,
-            items: _platformItems,
-            onItemsChanged: onItemsChanged),
-        MultiSelectWidget(
-            name: 'Tools',
-            itemsList: toolsItemList,
-            items: _toolsItems,
-            onItemsChanged: onItemsChanged
-        ),
+       ResponsiveApp(
+           mobile: Column(
+             children: [
+               MultiSelectWidget(
+                   name: 'Platform Type',
+                   itemsList: platformItemList,
+                   items: _platformItems,
+                   onItemsChanged: onItemsChanged),
+               MultiSelectWidget(
+                   name: 'Tools',
+                   itemsList: toolsItemList,
+                   items: _toolsItems,
+                   onItemsChanged: onItemsChanged
+               ),
+             ],
+           ),
+           tablet:  Row(
+             children: [
+               Expanded(
+                 child: MultiSelectWidget(
+                     name: 'Platform Type',
+                     itemsList: platformItemList,
+                     items: _platformItems,
+                     onItemsChanged: onItemsChanged),
+               ),
+               SizedBox(width: 5,),
+               Expanded(
+                 child: MultiSelectWidget(
+                     name: 'Tools',
+                     itemsList: toolsItemList,
+                     items: _toolsItems,
+                     onItemsChanged: onItemsChanged
+                 ),
+               ),
+             ],
+           ),
+           desktop: Row(
+             children: [
+               Expanded(
+                 child: MultiSelectWidget(
+                     name: 'Platform Type',
+                     itemsList: platformItemList,
+                     items: _platformItems,
+                     onItemsChanged: onItemsChanged),
+               ),
+               SizedBox(width: 5,),
+               Expanded(
+                 child: MultiSelectWidget(
+                     name: 'Tools',
+                     itemsList: toolsItemList,
+                     items: _toolsItems,
+                     onItemsChanged: onItemsChanged
+                 ),
+               ),
+             ],
+           )
+       ),
 
-        AppFormTextField(
-          labelText: 'Purpose',
-          hintText: 'Purpose',
-          controller: _purposeController,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Dive Number *";
-            } return null;
-          },
+        ResponsiveApp(
+            mobile: Column(
+              children: [
+                AppTextFormFieldFunc('Purpose', _purposeController, TextInputType.text),
+                AppTextFormFieldFunc('Comment', _commentController, TextInputType.text),
+              ],
+            ),
+            tablet: Row(
+              children: [
+                Expanded(child: AppTextFormFieldFunc('Purpose', _purposeController, TextInputType.text),),
+                SizedBox(width: 5,),
+                Expanded(child: AppTextFormFieldFunc('Comment', _commentController, TextInputType.text),)
+              ],
+            ),
+            desktop: Row(
+              children: [
+                Expanded(child: AppTextFormFieldFunc('Purpose', _purposeController, TextInputType.text),),
+                SizedBox(width: 5,),
+                Expanded(child: AppTextFormFieldFunc('Comment', _commentController, TextInputType.text),)
+              ],
+            )
         ),
-
-        AppFormTextField(
-          labelText: 'Comment',
-          hintText: 'Comment',
-          controller: _commentController,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Comment";
-            } return null;
-          },
-        ),
-
 
         const SizedBox(
           height: 20,
@@ -521,6 +562,18 @@ class _DiveFormState extends State<DiveForm> {
     );
   }
 
+  AppTextFormFieldFunc(labelText, controller , keyboardType){
+    return   AppFormTextField(
+      labelText: labelText + ' *',
+      controller: controller,
+      keyboardInputType: keyboardType,
+      validator: (value){
+        if((value == null || value.isEmpty) && isSaved == true){
+          return "Please Enter $labelText *";
+        } return null;
+      },
+    );
+  }
   onItemsChanged() {
     showProtocols();
   }
@@ -608,8 +661,23 @@ class _DiveFormState extends State<DiveForm> {
     setState(() {
       _isLoading = false;
     });
+    //
+    // if(widget.arguments['sampleCount'] != null && widget.arguments['analysisCount'] != null && widget.arguments['status'] != null){
+    //   obj['sampleCount'] = widget.arguments['sampleCount'];
+    //   obj['analysisCount'] = widget.arguments['analysisCount'];
+    //   obj['status'] = widget.arguments['status'];
+    // }else{
+    //   obj['sampleCount'] = 0;
+    //   obj['analysisCount'] = 0;
+    //   obj['status'] = 'Completed';
+    // }
+    // if(response != null) {
+    //   obj['_key'] = response['_key'];
+    // }
+    //
 
-    // print('Response body: ${response.body}');
+    // widget.formData!(obj);
+
     Navigator.pop(
         context, MaterialPageRoute(builder: (context) => Platforms()));
   }

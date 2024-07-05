@@ -4,8 +4,11 @@ import 'package:expedition_poc/services/location_service.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/colorUtils.dart';
 import 'package:expedition_poc/utils/AppTextFormField.dart';
+import 'package:expedition_poc/utils/responsive.dart';
 import 'package:expedition_poc/widgets/readonlyField.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
@@ -13,7 +16,10 @@ import 'package:location/location.dart';
 import '../../../../../utils/colors.dart';
 
 class LocationForm extends StatefulWidget {
-  const LocationForm({super.key});
+  LocationForm({super.key,  this.arguments , this.formData});
+
+  final arguments;
+  Function(dynamic)? formData;
 
   @override
   _LocationFormState createState() => _LocationFormState();
@@ -24,7 +30,6 @@ class _LocationFormState extends State<LocationForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool isSaved = false;
-
   String name = "";
   final _operationalDaysController = TextEditingController();
   final _purposeController = TextEditingController();
@@ -59,7 +64,8 @@ class _LocationFormState extends State<LocationForm> {
   }
 
   Future<void> _initializeData() async {
-    final arguments = ModalRoute.of(context)!.settings.arguments;
+    final arguments = widget.arguments;
+    // final arguments = ModalRoute.of(context)!.settings.arguments;
     expeditionId = (arguments as Map)["expeditionId"];
     areaId = arguments["areaId"];
     setState(() {
@@ -358,104 +364,167 @@ class _LocationFormState extends State<LocationForm> {
         // ),
 
 
-        AppFormTextField(
-          labelText: 'Operational Days',
-          hintText: 'Operational Days',
-          controller: _operationalDaysController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Name";
-            } return null;
-          },
+        AppTextFormFieldFunc('Operational Days', _operationalDaysController, TextInputType.number),
+
+        ResponsiveApp(
+            mobile: Column(
+              children: [
+                AppFormTextField(
+                  labelText: 'Start Date *',
+                  hintText: 'Start Date *',
+                  controller: _startDate,
+                  keyboardInputType: TextInputType.datetime,
+                  readOnly: true,
+                  suffixIcon:Icons.calendar_month,
+                  validator: (value){
+                    if((value == null || value.isEmpty) && isSaved == true){
+                      return "Please Select Start Date *";
+                    } return null;
+                  },
+                  onTep: () => _selectDate(context, _startDate_date, _startDate),
+                ),
+
+                AppFormTextField(
+                  labelText: 'End Date *',
+                  hintText: 'End Date *',
+                  controller: _endDate,
+                  keyboardInputType: TextInputType.datetime,
+                  readOnly: true,
+                  suffixIcon:Icons.calendar_month,
+                  validator: (value){
+                    if((value == null || value.isEmpty) && isSaved == true){
+                      return "Please Select End Date *";
+                    } return null;
+                  },
+                  onTep: () => _selectDate(context, _endDate_date, _endDate),
+                ),
+              ],
+            ), 
+            tablet: Row(
+              children: [
+                Expanded(
+                  child: AppFormTextField(
+                    labelText: 'Start Date *',
+                    hintText: 'Start Date *',
+                    controller: _startDate,
+                    keyboardInputType: TextInputType.datetime,
+                    readOnly: true,
+                    suffixIcon:Icons.calendar_month,
+                    validator: (value){
+                      if((value == null || value.isEmpty) && isSaved == true){
+                        return "Please Enter Start Date *";
+                      } return null;
+                    },
+                    onTep: () => _selectDate(context, _startDate_date, _startDate),
+                  ),
+                ),
+                SizedBox(width: 5,),
+                Expanded(
+                  child: AppFormTextField(
+                    labelText: 'End Date *',
+                    hintText: 'End Date *',
+                    controller: _endDate,
+                    keyboardInputType: TextInputType.datetime,
+                    readOnly: true,
+                    suffixIcon:Icons.calendar_month,
+                    validator: (value){
+                      if((value == null || value.isEmpty) && isSaved == true){
+                        return "Please Enter End Date *";
+                      } return null;
+                    },
+                    onTep: () => _selectDate(context, _endDate_date, _endDate),
+                  ),
+                ),
+
+              ],
+            ),
+            desktop: Row(
+              children: [
+                Expanded(
+                  child: AppFormTextField(
+                    labelText: 'Start Date *',
+                    hintText: 'Start Date *',
+                    controller: _startDate,
+                    keyboardInputType: TextInputType.datetime,
+                    readOnly: true,
+                    suffixIcon:Icons.calendar_month,
+                    validator: (value){
+                      if((value == null || value.isEmpty) && isSaved == true){
+                        return "Please Enter Start Date *";
+                      } return null;
+                    },
+                    onTep: () => _selectDate(context, _startDate_date, _startDate),
+                  ),
+                ),
+                SizedBox(width: 5,),
+                Expanded(
+                  child: AppFormTextField(
+                    labelText: 'End Date *',
+                    hintText: 'End Date *',
+                    controller: _endDate,
+                    keyboardInputType: TextInputType.datetime,
+                    readOnly: true,
+                    suffixIcon:Icons.calendar_month,
+                    validator: (value){
+                      if((value == null || value.isEmpty) && isSaved == true){
+                        return "Please Enter End Date *";
+                      } return null;
+                    },
+                    onTep: () => _selectDate(context, _endDate_date, _endDate),
+                  ),
+                ),
+
+              ],
+            )
         ),
 
-        AppFormTextField(
-          labelText: 'Start Date',
-          hintText: 'Start Date',
-          controller: _startDate,
-          keyboardInputType: TextInputType.datetime,
-          readOnly: true,
-          suffixIcon:Icons.calendar_month,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Start Date";
-            } return null;
-          },
-          onTep: () => _selectDate(context, _startDate_date, _startDate),
+        ResponsiveApp(
+            mobile: Column(
+              children: [
+                AppTextFormFieldFunc('Purpose', _purposeController, TextInputType.text),
+                AppTextFormFieldFunc('Target', _targetTypeController, TextInputType.text),
+              ],
+            ),
+            tablet: Row(
+              children: [
+                Expanded(child: AppTextFormFieldFunc('Purpose', _purposeController, TextInputType.text),),
+                SizedBox(width: 5,),
+                Expanded(child: AppTextFormFieldFunc('Target', _targetTypeController, TextInputType.text),)
+              ],
+            ),
+            desktop: Row(
+              children: [
+                Expanded(child: AppTextFormFieldFunc('Purpose', _purposeController, TextInputType.text),),
+                SizedBox(width: 5,),
+                Expanded(child: AppTextFormFieldFunc('Target', _targetTypeController, TextInputType.text),)
+              ],
+            )
         ),
 
-        AppFormTextField(
-          labelText: 'End Date',
-          hintText: 'End Date',
-          controller: _endDate,
-          keyboardInputType: TextInputType.datetime,
-          readOnly: true,
-          suffixIcon:Icons.calendar_month,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter End Date";
-            } return null;
-          },
-          onTep: () => _selectDate(context, _endDate_date, _endDate),
-        ),
+        AppTextFormFieldFunc('Depth (m)', _depthController, TextInputType.number),
 
-        AppFormTextField(
-          labelText: 'Purpose',
-          hintText: 'Purpose',
-          controller: _purposeController,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Purpose";
-            } return null;
-          },
-        ),
 
-        AppFormTextField(
-          labelText: 'Target',
-          hintText: 'Target',
-          controller: _targetTypeController,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Target";
-            } return null;
-          },
-        ),
-
-        AppFormTextField(
-          labelText: 'Depth (m)',
-          hintText: 'Depth (m)',
-          controller: _depthController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Depth (m)";
-            } return null;
-          },
-        ),
-
-        AppFormTextField(
-          labelText: 'Latitude',
-          hintText: 'Latitude',
-          controller: _latitudeController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Latitude";
-            } return null;
-          },
-        ),
-
-        AppFormTextField(
-          labelText: 'Longitude',
-          hintText: 'Longitude',
-          controller: _longitudeController,
-          keyboardInputType: TextInputType.number,
-          validator: (value){
-            if((value == null || value.isEmpty) && isSaved == true){
-              return "Please Enter Longitude";
-            } return null;
-          },
+        ResponsiveApp(
+            mobile: Column(
+              children: [
+                AppTextFormFieldFunc('Latitude', _latitudeController, TextInputType.number),
+                AppTextFormFieldFunc('Longitude', _longitudeController, TextInputType.number),
+              ],
+            ),
+            tablet: Row(
+              children: [
+                Expanded(child: AppTextFormFieldFunc('Latitude', _latitudeController, TextInputType.number),),
+                SizedBox(width: 5,),
+                Expanded(child: AppTextFormFieldFunc('Longitude', _longitudeController, TextInputType.number),)
+              ],
+            ),
+            desktop: Row(
+              children: [
+                Expanded(child: AppTextFormFieldFunc('Latitude', _latitudeController, TextInputType.number),),
+                SizedBox(width: 5,),
+                Expanded(child: AppTextFormFieldFunc('Longitude', _longitudeController, TextInputType.number),)
+              ],
+            )
         ),
 
 
@@ -560,11 +629,23 @@ class _LocationFormState extends State<LocationForm> {
     );
   }
 
+  AppTextFormFieldFunc(labelText, controller , keyboardType){
+    return  AppFormTextField(
+      labelText: labelText + ' *',
+      controller: controller,
+      keyboardInputType: keyboardType,
+      validator: (value){
+        if((value == null || value.isEmpty) && isSaved == true){
+          return "Please Enter $labelText *";
+        } return null;
+      },
+    );
+  }
   Future saveArea() async {
     setState(() {
       _isLoading = true;
     });
-    final obj = {
+    Map<String, dynamic> obj = {
       "expeditionId": expeditionId,
       "areaId": areaId,
       "name": name,
@@ -583,9 +664,28 @@ class _LocationFormState extends State<LocationForm> {
     // save to db
     final response = await ApiProvider()
         .post(AppConsts.baseURL + AppConsts.saveLocation, obj);
+
+    if(widget.arguments['diveCount'] != null && widget.arguments['sampleCount'] != null && widget.arguments['status'] != null) {
+      obj['diveCount'] = widget.arguments['diveCount'];
+      obj['sampleCount'] = widget.arguments['sampleCount'];
+      obj['status'] = widget.arguments['status'];
+    }
+    else{
+      obj['diveCount'] = 0;
+      obj['sampleCount'] = 0;
+      obj['status'] = 'onLocation';
+
+    }
+
+    if(response != null) {
+      obj['_key'] = response['_key'];
+    }
+
     setState(() {
       _isLoading = false;
     });
-    Navigator.pop(context, MaterialPageRoute(builder: (context) => Areas()));
+
+    widget.formData!(obj);
+    // Navigator.pop(context, MaterialPageRoute(builder: (context) => Areas()));
   }
 }

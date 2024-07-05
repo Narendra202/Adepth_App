@@ -17,7 +17,9 @@ import 'package:location/location.dart';
 import '../../../../../../../../utils/colors.dart';
 
 class AnalysisForm extends StatefulWidget {
-  const AnalysisForm({super.key});
+  const AnalysisForm({super.key, this.arguments});
+
+  final arguments;
 
   @override
   _AnalysisFormState createState() => _AnalysisFormState();
@@ -62,7 +64,8 @@ class _AnalysisFormState extends State<AnalysisForm> {
     });
   }
   Future<void> _initializeData() async {
-    final arguments = ModalRoute.of(context)!.settings.arguments;
+    final arguments = widget.arguments;
+    // final arguments = ModalRoute.of(context)!.settings.arguments;
       expeditionId = (arguments as Map)["expeditionId"];
       diveId = (arguments)["diveId"];
       areaId = (arguments)["areaId"];
@@ -130,7 +133,6 @@ class _AnalysisFormState extends State<AnalysisForm> {
 
     List<String> urlList = <String>[];
     List<File> fileList = <File>[];
-    print(picturesList);
     for (int i = 0; i < picturesList.length; i++) {
       GenerateImageUrl generateImageUrl = GenerateImageUrl();
       String url = await generateImageUrl.getImageUrl(picturesList[i]);
@@ -309,13 +311,12 @@ class _AnalysisFormState extends State<AnalysisForm> {
             value: _analysisTypeValue,
             items: _analysisTypeList,
             onChanged: _isTypeDropdownEnabled ? onTypeChange : null,
-          validator: (value) {
+            validator: (value) {
             if (_analysisTypeValue == null) {
-              return 'Please select an option';
+              return 'Please select an option *';
             }
             return null; // Return null if the value is valid
           },
-
         ),
         const SizedBox(height: 5,),
 

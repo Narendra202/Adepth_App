@@ -11,6 +11,8 @@ import 'package:expedition_poc/widgets/confirmation_dialog.dart';
 import 'package:expedition_poc/widgets/readonlyField.dart';
 import 'package:flutter/material.dart';
 
+import 'analysis_form.dart';
+
 class Analysis extends StatefulWidget {
   const Analysis({super.key});
 
@@ -132,14 +134,35 @@ class _AnalysisState extends State<Analysis> {
             floatingActionButton: AppCircleButton(
               icon: Icons.add,
               onPressed:  () => {
-                        Navigator.pushNamed(context, AppPaths.analysisForm,
-                            arguments: {
-                              "areaId": areaId,
-                              "expeditionId": expeditionId,
-                              "diveId": diveId,
-                              "locationId": locationId,
-                              "sampleId": sampleId
-                            }).then((value) => {initialize(sampleId)})
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return  AlertDialog(
+                          contentPadding: EdgeInsets.zero,
+                          content: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: AnalysisForm(
+                              arguments: {
+                                "areaId": areaId,
+                                "expeditionId": expeditionId,
+                                "diveId": diveId,
+                                "locationId": locationId,
+                                "sampleId": sampleId
+                              },
+                            ),
+                          ));
+                    }
+                ).then((value) => {initialize(sampleId)})
+
+
+                        // Navigator.pushNamed(context, AppPaths.analysisForm,
+                        //     arguments: {
+                        //       "areaId": areaId,
+                        //       "expeditionId": expeditionId,
+                        //       "diveId": diveId,
+                        //       "locationId": locationId,
+                        //       "sampleId": sampleId
+                        //     }).then((value) => {initialize(sampleId)})
                       }),
             ),
             // floatingActionButton: AddFloatingButton(

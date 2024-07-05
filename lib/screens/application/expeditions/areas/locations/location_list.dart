@@ -8,8 +8,11 @@ class LocationList extends StatefulWidget {
   List locationList = [];
   Function(dynamic areaId) initCall;
   Function(String name, String key) showConfirmationDialog;
+  Function(dynamic)? editformData;
+
+
   LocationList({Key? key, required this.locationList, required this.initCall,
-    required this.showConfirmationDialog})
+    required this.showConfirmationDialog, this.editformData})
       : super(key: key);
 
   @override
@@ -39,7 +42,11 @@ class _LocationListState extends State<LocationList> {
           return LocationCard(
               item: locationList[index],
               initCall: initialize,
-              showConfirmationDialog: showConfirmationDialog);
+              showConfirmationDialog: showConfirmationDialog,
+              editformData: (value){
+                widget.editformData!(value);
+              },
+          );
         },
       ),
       tablet: DynamicHeightGridView(
@@ -51,7 +58,11 @@ class _LocationListState extends State<LocationList> {
             return  LocationCard(
                 item: locationList[index],
                 initCall: initialize,
-                showConfirmationDialog: showConfirmationDialog);
+                showConfirmationDialog: showConfirmationDialog,
+                editformData: (value){
+                 widget.editformData!(value);
+              },
+            );
 
 
           }
@@ -65,7 +76,11 @@ class _LocationListState extends State<LocationList> {
           return  LocationCard(
           item: locationList[index],
           initCall: initialize,
-           showConfirmationDialog: showConfirmationDialog);
+           showConfirmationDialog: showConfirmationDialog,
+            editformData: (value){
+              widget.editformData!(value);
+            },
+          );
 
 
          }

@@ -1,5 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/areas/locations/dives/dive_form.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/appPaths.dart';
 import 'package:expedition_poc/utilities/colorUtils.dart';
@@ -158,14 +159,33 @@ class _DiveCardState extends State<DiveCard> {
                               if (_selectedPanel != ExpandableContent.none) {
                                 selectedPanelContent();
                               }
-                              Navigator.pushNamed(context, AppPaths.diveForm,
-                                  arguments: {
-                                    "diveId": widget.item["_key"],
-                                    "expeditionId": widget.item["expeditionId"],
-                                    "areaId": widget.item["areaId"],
-                                    "locationId": widget.item["locationId"],
-                                  }).then((value) =>
-                                  {widget.initCall(widget.item["locationId"])});
+
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                return  AlertDialog(
+                                  contentPadding: EdgeInsets.zero,
+                                  content: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: DiveForm(
+                                        arguments: {
+                                          "diveId": widget.item["_key"],
+                                          "expeditionId": widget.item["expeditionId"],
+                                          "areaId": widget.item["areaId"],
+                                          "locationId": widget.item["locationId"],
+                                      },
+                                      )
+                                  ),);
+                              }).then((value) => {widget.initCall(widget.item["locationId"])});
+                              
+                              // Navigator.pushNamed(context, AppPaths.diveForm,
+                              //     arguments: {
+                              //       "diveId": widget.item["_key"],
+                              //       "expeditionId": widget.item["expeditionId"],
+                              //       "areaId": widget.item["areaId"],
+                              //       "locationId": widget.item["locationId"],
+                              //     }).then((value) =>
+                              //     {widget.initCall(widget.item["locationId"])});
                             }
                           },
                           {

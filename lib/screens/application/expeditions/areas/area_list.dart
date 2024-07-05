@@ -8,8 +8,10 @@ class AreaList extends StatefulWidget {
   List areaList = [];
   Function(dynamic expeditionId) initCall;
   Function(String name, String key) showConfirmationDialog;
+  Function(dynamic)? editformData;
+
   AreaList({Key? key, required this.areaList, required this.initCall,
-    required this.showConfirmationDialog})
+    required this.showConfirmationDialog, this.editformData})
       : super(key: key);
 
   @override
@@ -31,6 +33,7 @@ class _AreaListState extends State<AreaList> {
 
   @override
   Widget build(BuildContext context) {
+
     return ResponsiveApp(
         mobile: ListView.builder(
           itemCount: areaList.length, // The number of items in the list
@@ -39,7 +42,10 @@ class _AreaListState extends State<AreaList> {
             return AreaCard(
                 item: areaList[index],
                 initCall: initialize,
-                showConfirmationDialog: showConfirmationDialog
+                showConfirmationDialog: showConfirmationDialog,
+                editformData: (value){
+                  widget.editformData!(value);
+                },
             );
           },
         ),
@@ -52,7 +58,10 @@ class _AreaListState extends State<AreaList> {
               return AreaCard(
                   item: areaList[index],
                   initCall: initialize,
-                  showConfirmationDialog: showConfirmationDialog
+                  showConfirmationDialog: showConfirmationDialog,
+                  editformData: (value){
+                    widget.editformData!(value);
+                },
               );
             }
         ),
@@ -65,7 +74,10 @@ class _AreaListState extends State<AreaList> {
               return AreaCard(
                           item: areaList[index],
                           initCall: initialize,
-                          showConfirmationDialog: showConfirmationDialog
+                          showConfirmationDialog: showConfirmationDialog,
+                          editformData: (value){
+                          widget.editformData!(value);
+                          },
                       );
             }
         ),

@@ -1,4 +1,7 @@
+// import 'dart:js_interop';
+
 import 'package:expedition_poc/providers/ApiProvider.dart';
+import 'package:expedition_poc/screens/application/expeditions/areas/locations/location_form.dart';
 import 'package:expedition_poc/screens/application/expeditions/areas/locations/location_list.dart';
 import 'package:expedition_poc/utilities/appConsts.dart';
 import 'package:expedition_poc/utilities/appPaths.dart';
@@ -9,6 +12,7 @@ import 'package:expedition_poc/widgets/add_floatingButton.dart';
 import 'package:expedition_poc/widgets/confirmation_dialog.dart';
 import 'package:expedition_poc/widgets/readonlyField.dart';
 import 'package:flutter/material.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class Locations extends StatefulWidget {
   const Locations({super.key});
@@ -23,8 +27,8 @@ class _LocationsState extends State<Locations> {
   String title = "Area ";
   var data;
   late String expeditionId, areaId;
-
   bool isOpen = false;
+  late Map formData;
 
   @override
   void initState() {
@@ -40,6 +44,7 @@ class _LocationsState extends State<Locations> {
     expeditionId = (arguments as Map)["expeditionId"];
     areaId = arguments["areaId"];
     initialize(areaId);
+
   }
 
   initialize(areaId) async {
@@ -55,6 +60,8 @@ class _LocationsState extends State<Locations> {
       data = response;
       locationList.addAll(response["data"]);
     });
+
+
   }
 
   // @override
@@ -109,7 +116,15 @@ class _LocationsState extends State<Locations> {
                   child: LocationList(
                       locationList: locationList,
                       initCall: initialize,
-                      showConfirmationDialog: showConfirmationDialog),
+                      showConfirmationDialog: showConfirmationDialog,
+                      editformData: (value){
+                        for(int i = 0; i< locationList.length; i++) {
+                          if(locationList[i]['_key'] == value['_key']) {
+                            locationList[i] = value;
+                          }
+                        }
+                      },
+                  ),
                 ),
                 const SizedBox(
                   height: 25,
@@ -121,11 +136,37 @@ class _LocationsState extends State<Locations> {
             floatingActionButton: AppCircleButton(
               icon: Icons.add,
               onPressed: (){
-                Navigator.pushNamed(context, AppPaths.locationForm,
-                                  arguments: {
-                                    "areaId": areaId,
-                                    "expeditionId": expeditionId
-                                  }).then((value) => {initialize(areaId)});
+
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return  AlertDialog(
+                        contentPadding: EdgeInsets.zero,
+                        content: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: LocationForm(
+                              arguments: {
+                                 "areaId": areaId,
+                                 "expeditionId": expeditionId,
+                              },
+                              formData: (value){
+                                formData = value;
+                                locationList.add(formData);
+                                finish(context);
+                              },
+
+                            )
+                        ),
+                      );
+                    }
+                );
+
+
+                // Navigator.pushNamed(context, AppPaths.locationForm,
+                //                   arguments: {
+                //                     "areaId": areaId,
+                //                     "expeditionId": expeditionId
+                //                   }).then((value) => {initialize(areaId)});
               },
             ),
             // floatingActionButton: AddFloatingButton(
